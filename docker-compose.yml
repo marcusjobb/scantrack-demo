@@ -1,0 +1,50 @@
+services:
+
+  registry:
+    build:
+      context: ../scantrack-registry/ScanTrackRegistry
+    ports:
+      - "5001:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/nodes"]
+      interval: 5s
+      retries: 5
+
+  goteborg:
+    build:
+      context: ./ScanTrackNode
+    ports:
+      - "5002:8080"
+    environment:
+      CITY_NAME: Göteborg
+      NODE_URL: http://goteborg:8080
+      REGISTRY_URL: http://registry:8080
+    depends_on:
+      registry:
+        condition: service_healthy
+
+  stockholm:
+    build:
+      context: ./ScanTrackNode
+    ports:
+      - "5003:8080"
+    environment:
+      CITY_NAME: Stockholm
+      NODE_URL: http://stockholm:8080
+      REGISTRY_URL: http://registry:8080
+    depends_on:
+      registry:
+        condition: service_healthy
+
+  umea:
+    build:
+      context: ./ScanTrackNode
+    ports:
+      - "5004:8080"
+    environment:
+      CITY_NAME: Umeå
+      NODE_URL: http://umea:8080
+      REGISTRY_URL: http://registry:8080
+    depends_on:
+      registry:
+        condition: service_healthy
